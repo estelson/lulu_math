@@ -27,6 +27,49 @@ class _HomePageState extends State<HomePage> {
     "0",
   ];
 
+  /// Number A, number B
+  int numberA = 1;
+  int numberB = 1;
+
+  /// User answers
+  String userAnswer = "";
+
+  /// User tapped a button function
+  void buttonTapped(String button) {
+    setState(() {
+      if (button == "=") {
+        /// Calculate if user answer is correct or not
+        checkResult();
+      } else if (button == "C") {
+        /// Clear the input
+        userAnswer = "";
+      } else if (button == "DEL") {
+        /// Delete the last number
+        if (userAnswer.isNotEmpty) {
+          userAnswer = userAnswer.substring(0, userAnswer.length - 1);
+        }
+      } else if (userAnswer.length < 4) {
+        /// Maximum of 4 numbers can be inputted
+        userAnswer += button;
+      }
+    });
+  }
+
+  /// Check if user answer is correct or not
+  void checkResult() {
+    if (userAnswer.isNotEmpty) {
+      if (numberA + numberB == int.parse(userAnswer)) {
+        debugPrint("");
+        debugPrint("CORRECT!");
+        debugPrint("");
+      } else {
+        debugPrint("");
+        debugPrint("INCORRECT!");
+        debugPrint("");
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,9 +86,31 @@ class _HomePageState extends State<HomePage> {
           Expanded(
             child: Container(
               child: Center(
-                child: Text(
-                  "1 + 1 = ?",
-                  style: whiteTextStyle,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    /// Question
+                    Text(
+                      "${numberA.toString()} + ${numberB.toString()} = ",
+                      style: whiteTextStyle,
+                    ),
+
+                    /// Answer box
+                    Container(
+                      height: 50,
+                      width: 150,
+                      decoration: BoxDecoration(
+                        color: Colors.deepPurple[400],
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Center(
+                        child: Text(
+                          userAnswer,
+                          style: whiteTextStyle,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -54,15 +119,21 @@ class _HomePageState extends State<HomePage> {
           /// Number pad section
           Expanded(
             flex: 2,
-            child: GridView.builder(
-              itemCount: numberPad.length,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4,
+            child: Padding(
+              padding: const EdgeInsets.all(4),
+              child: GridView.builder(
+                itemCount: numberPad.length,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4,
+                ),
+                itemBuilder: (context, index) {
+                  return MyButton(
+                    child: numberPad[index],
+                    onTap: () => buttonTapped(numberPad[index]),
+                  );
+                },
               ),
-              itemBuilder: (context, index) {
-                return MyButton(child: numberPad[index]);
-              },
             ),
           ),
         ],
